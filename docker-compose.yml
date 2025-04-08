@@ -1,0 +1,25 @@
+version: "3.7" # Versi docker compose minimal 2 sesuai kriteria
+
+services:
+  # Service database
+  item-db:
+    image: mongo:3 # Pakai image MongoDB versi 3 dari Docker Hub
+    volumes:
+      - app-db:/data/db # Volume app-db akan di-mount ke /data/db di dalam container
+    restart: always # Supaya container ini selalu restart kalau berhenti/error
+
+  # Service aplikasi
+  item-app:
+    image: maakmall/microservice-proyek-pertama:v1 # Nama image yang di build/push sebelumnya
+    ports:
+      - "80:8080" # Port 80 di host diarahkan ke port 8080 di container
+    depends_on:
+      - item-db # Pastikan item-app baru jalan setelah item-db aktif
+    environment:
+      NODE_ENV: production # Set environment ke production
+      DB_HOST: item-db # Nama host DB yang dipake di dalam container
+    restart: always # Biar container ini juga auto restart kalau berhenti/error
+
+# Deklarasi volume bernama app-db
+volumes:
+  app-db:
